@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <projectUrl>https://github.com/tugberkugurlu/MultiTenantRepository</projectUrl>
+    <licenseUrl>https://raw.github.com/tugberkugurlu/MultiTenantRepository/master/license.txt</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <copyright>Copyright 2012 Tugberk Ugurlu</copyright>
+    <tags>EntityFramework CodeFirst DbContext Repository MultiTenantRepository</tags>
+    <dependencies>
+      <dependency id="MultiTenantRepository" version="$version$" />
+    </dependencies>
+  </metadata>
+</package>
