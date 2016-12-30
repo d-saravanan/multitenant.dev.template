@@ -1,3 +1,19 @@
+<div>
+<span>Coverity Analysis : </span>
+<span>
+<a href="https://scan.coverity.com/projects/d-saravanan-multitenant.dev.template">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/11273/badge.svg"/>
+</a>
+</span>
+</div>
+<div>
+<span> Build Status : </span>
+<span>
+<img src="https://ci.appveyor.com/api/projects/status/github/d-saravanan/multitenant.dev.template?svg=true" alt="GenericRepository Build Status Badge">
+</span>
+</div>
+
 This little project contains a Generic Repository implementation for several data access platforms such as Entity Framework.
 
 You can find more information about the main idea of this pattern and the usage on ASP.NET MVC along with Unit Testing by visiting the below links:
