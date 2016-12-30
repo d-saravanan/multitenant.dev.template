@@ -1,6 +1,6 @@
 ﻿using Moq;
+using MultiTenancy.Core.ProviderContracts;
 using MultiTenantRepository.EntityFramework;
-using MultiTenantRepositry.EF.Api;
 using MultiTenantRepositry.EF.Api.Controllers;
 using MultiTenantRepositry.EF.Api.Test.Infrastructure;
 using MultiTenantRepositry.EF.Core.Entities;
@@ -34,16 +34,18 @@ namespace MultiTenantRepositry.EF.Api.Test
                 new Country { Id = 4, Name = "Uruguay", ISOCode = "UY", CreatedOn = DateTimeOffset.Now }
             };
             var dbSet = new FakeDbSet<Country>();
-            foreach (var country in countries)
-            {
+            foreach (var country in countries) {
                 dbSet.Add(country);
             }
 
             var entitiesContext = new Mock<IEntitiesContext>();
             entitiesContext.Setup(ec => ec.Set<Country>()).Returns(dbSet);
+
+            var userContext = getMockedUserContext();
+
             var countriesRepo = new MultiTenantRepository<Country>(entitiesContext.Object);
             MultiTenantServices<Country, int> countryService = new CountryService(countriesRepo);
-            var countriesController = new CountriesController(countryService, Global._mapper);
+            var countriesController = new CountriesController(countryService, Global._mapper, userContext);
             var pageIndex = 1;
             var pageSize = 3;
 
@@ -55,6 +57,15 @@ namespace MultiTenantRepositry.EF.Api.Test
             Assert.Equal(countries.Count, paginatedDto.TotalCount);
             Assert.Equal(pageSize, paginatedDto.PageSize);
             Assert.Equal(pageIndex, paginatedDto.PageIndex);
+        }
+
+        private static IUserContextDataProvider getMockedUserContext()
+        {
+            var userContext = new Mock<IUserContextDataProvider>();
+            userContext.Setup(uc => uc.TenantId).Returns(Guid.NewGuid());
+            userContext.Setup(uc => uc.UserId).Returns(Guid.NewGuid());
+            userContext.Setup(uc => uc.UserName).Returns(System.IO.Path.GetRandomFileName());
+            return userContext.Object;
         }
     }
 }
