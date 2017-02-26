@@ -2,11 +2,17 @@
 This is a boilerplate framework code base that can be used to fasten the development of the applications that are multi-tenant. The multi-tenant or tenancy aware applications are the most sought after these days with the growing demand for apps that can be hosted in single code base on the cloud with the customizations per tenant or per customer or per company.
 
 The following terms
+
 1. Tenant
 2. Customer
 3. Company
 
 are analogous and refers to the term **tenant** in **multi-tenancy**.
+
+## Contents
+1. [Introduction](index.md)
+2. [Services](services.md)
+3. [Authorization and Tenancy](tenantcontext.md)
 
 # Introduction
 This source code contains abstract implementatons for the development team to get started with ease in building the **multi-tenant** application.
