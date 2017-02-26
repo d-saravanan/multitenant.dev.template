@@ -21,7 +21,11 @@ As described, this method adds the filter clause to the EF Query and then passes
 
 There is no developer intervention / custom EF Repository required as the machinery is already in place to make the filtering happen automatically.
 
+**NOTE**
+This template does not use Session as it is a REST Api and also does not persist the TenantContext, its always fetched from the established claims identity.
+
 **Sample Code**
+### Repository Level Enforcement of Tenant Security
 ```
 private async Task<PaginatedList<TEntity>> PaginateAsync<TKey>(Guid tenantId, int pageIndex, int pageSize, Expression<Func<TEntity, TKey>> keySelector, Expression<Func<TEntity, bool>> predicate, OrderByType orderByType, params Expression<Func<TEntity, object>>[] includeProperties)
 {
@@ -33,5 +37,56 @@ private async Task<PaginatedList<TEntity>> PaginateAsync<TKey>(Guid tenantId, in
 	queryable = (predicate != null) ? queryable.Where(predicate) : queryable;
 	var paginatedList = queryable.ToPaginatedList(pageIndex, pageSize);
 	return paginatedList;
+}
+```
+
+### Controller Sample
+```
+public class CountriesController : BaseApiController
+{
+	private readonly MultiTenantServices<Country, int> _countryService;
+	public CountriesController(MultiTenantServices<Country, int> countryService, IMapper mapper, IUserContextDataProvider userContext) : base(mapper, userContext)
+	{
+		_countryService = countryService;
+	}
+	//... other implementations hidden
+}
+```
+
+### Getting the TenantId
+```
+public async Task<PaginatedDto<CountryDto>> GetCountries(int pageIndex, int pageSize)
+{
+	PaginatedList<Country> countries = await _countryService.SearchAsync(new CountrySearchCondition
+	{
+		PageNo = pageIndex,
+		RecordsPerPage = pageSize,
+		TenantId = TenantId //This value is automatically picked from the GroupSid claim and set from the BaseApiController
+	});
+	PaginatedDto<CountryDto> countryPaginatedDto = _mapper.Map<PaginatedList<Country>, PaginatedDto<CountryDto>>(countries);
+	return countryPaginatedDto;
+	//return DtoResult<Country, CountryDto>(countries);
+}
+```
+
+### Service Definition
+```
+public class CountryService : MultiTenantServices<Country, int>
+{
+	IMultiTenantRepository<Country, int> _repository = null;
+
+	public CountryService(IMultiTenantRepository<Country, int> repository) : base(repository)
+	{
+		_repository = repository;
+	}
+	
+	public override async Task<PaginatedList<Country>> SearchAsync(BaseSearchCondition<int> searchCondition)
+	{
+		if (searchCondition == null) return null;
+
+		var result = await _repository.PaginateAsync(searchCondition.TenantId, searchCondition.PageNo, searchCondition.RecordsPerPage);
+		return result;
+	}	
+	//other implementations are hidden for brevity
 }
 ```
